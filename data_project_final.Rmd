@@ -1,7 +1,9 @@
 ---
 title: "Final Data Project"
 author: "DataTrail Team"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 # Final Data Project
@@ -56,6 +58,7 @@ library(readr)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
+library(usethis)
 ```
 
 ## Set up directories
