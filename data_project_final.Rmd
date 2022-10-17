@@ -1,0 +1,167 @@
+---
+title: "Final Data Project"
+author: "DataTrail Team"
+output: html_notebook
+---
+
+# Final Data Project
+
+### Your objectives!
+
+To complete this project there are a few requirements you will need to fulfill. Remember that you are not on your own for this project! Data science is done best as a community, so please ask others (and instructors) questions you have when you get stuck!
+
+1. Clearly state the data science question and goal for the analysis you are embarking on.
+
+2. This project should be completely uploaded and up to date on GitHub. Follow the steps in `Pushing and Pulling Changes` chapter for how to git add, commit, and push the changes you have done.
+
+3. Follow good organization principles -- you should at least have 2 folders: a `results` folder and a `data` folder. 4. 4. You should also have a README
+
+5. Make a resulting plot that you save to a file.
+
+6. Write up your final observations in regards to your original question. Note that some data science projects end with "This isn't what I thought it would be" or "that's strange" or "I think this is leading into another question I would need to investigate". Whatever your observations may be, write them up in your main R Markdown.
+
+7. When you feel your analysis is ready for review, send your instructor the GitHub link to your project so they can review it.
+
+8. Pat yourself on the back for all this work! You are a data scientist!
+
+## Data
+
+For this project you will use whatever data you choose.
+
+Options for places to find data are:
+
+- https://www.kaggle.com/datasets
+- https://shiny.rstudio.com/gallery/tidy-tuesday.html
+- https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html
+(This is the data that comes with R - you can load them using `datasets::` and pressing tab in RStudio to see the names of the datasets - for example `datasets::ability.cov` will load the ability dataset.)
+You are not limited to these options for finding your data.
+
+<Write where you got your data and provide the link if applicable.>
+
+<Describe how the data was originally created. If this is data that is part of `datasets` you can use the `?` like so: ` ?datasets::AirPassengers` to see information about the datasets.Otherwise provide a summary based on the source of the data.>
+
+## The goal of this analysis
+
+<Write here what the goal of this analysis is. What question are we trying to answer?> 
+## Set up 
+
+what gaming companies are runner ups to the big companies?
+
+Load packages you will need for this analysis. 
+
+```{r}
+## you can add more, or change...these are suggestions
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+```
+
+## Set up directories
+
+Set up the directories you will need. 
+
+```{r}
+if (!dir.exists("data")) {
+  dir.create("data")
+}
+if (!dir.exists("results")) {
+  dir.create("results")
+}
+```
+
+
+## Get the data 
+
+source of data :https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-03-16/readme.md#gamescsv
+
+```{r}
+# Read in your dataset(s)
+
+##source of data :https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-03-16/readme.md#gamescsv
+
+games <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-16/games.csv')
+
+
+
+```
+
+Explore your data here and describe what variables and samples you have.
+
+```{r}
+glimpse(games)
+```
+
+## Cleaning the data
+
+
+```{r}
+games_tidy <- games %>% select(gamename,avg,month,year) %>% top_n(15,year) %>% arrange(desc(avg)) %>% filter(gamename %in% c("Counter-Strike: Global Offensive","Dota 2","PLAYERUNKNOWN'S BATTLEGROUNDS","Rust","Apex Legends","Grand Theft Auto V","Team Fortress 2","Cyberpunk 2077","Tom Clancy's Rainbow Six Siege","ARK: Survival Evolved"))
+
+
+```
+
+## Plot the data! 
+
+```{r}
+##avg means average people that still play that game
+games_tidy_plot <- ggplot(data = games_tidy) + 
+  geom_point(aes(x = gamename,y = avg,color = gamename)) +  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+ggsave("results.pdf",plot = games_tidy_plot)
+```
+
+## Get the stats 
+
+
+### Conclusion 
+
+Write up your thoughts about this data science project here and answer the following questions: 
+
+i can tell from this plot that games like apex legends,ark survival evolved,team fortress 2,cyberpunk 2077 are runners ups comparing them to the main companies like counter strike,grand theft auto,rainbow six siege and  rust in the earlier part of 2021 from steams data.
+
+the company names of the big companies are
+
+-counter strike = Valve
+
+-dota 2 = also Valve
+
+-grand theft auto = Rockstar
+
+-rust = facepunch
+
+-rainbow six siege = ubisoft
+
+Runner up companies
+
+-apex legends = Respawn Entertainment
+
+-team forttress 2 = Valve
+
+-ark survival evolved = Studio Wildcard 
+
+-cyberpunk 2077 = CD Projekt Red
+
+- What did you find out in regards to your original question?
+
+that the big companies could own alot more than i thought,the runner ups have been making waves in the gaming community
+
+- What exceptions or caveats do you have in regards to your analysis you did?
+
+that this data is only part of a small portion of 2021, and this is data only from a website called steam
+
+that this data is not current data
+
+
+- What follow up questions do you have? 
+
+i wonder what games are peaking right now on the charts, i also wonder if some of these games are still pulling that many people
+
+## Print out session info
+
+Session info is a good thing to print out at the end of your notebooks so that you (and other folks) referencing your notebooks know what software versions and libraries you used to run the notebook.
+
+```{r}
+sessionInfo()
+```
