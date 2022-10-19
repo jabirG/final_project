@@ -124,6 +124,8 @@ i wonder how long has counter strike been the leading game for?
 
 csgo_data <- games %>% select(gamename,year,avg)
 
+csgo_df <- csgo_data %>% group_by(year) %>% summarise(mean_pop = mean(avg))
+
 ggplot(data =csgo_data,aes(year,avg)) + geom_line()
 
 ```
@@ -132,9 +134,11 @@ i want to compare counter strike from 2012 to 2021 to all games
 
 ```{r}
 
-comp_df <- games %>% group_by(year) %>% filter(all(2012:2021))
+comp_df <- games %>% group_by(year) %>% filter(all(2012:2021)) %>% summarise(mean_pop = mean(avg))
 
+cscom_plot <- bind_rows(list(csgo = csgo_df,all_other_games = comp_df),.id = "game")
 
+ggplot(cscom_plot,aes(year,mean_pop,color = game)) + geom_point() + geom_smooth()
 
 ```
 
@@ -146,6 +150,8 @@ comp_df <- games %>% group_by(year) %>% filter(all(2012:2021))
 Write up your thoughts about this data science project here and answer the following questions: 
 
 i can tell from this plot that games like apex legends,ark survival evolved,team fortress 2,cyberpunk 2077 are runners ups comparing them to the main companies like counter strike,grand theft auto,rainbow six siege and  rust in the earlier part of 2021 from steams data.
+
+also i found that counter strike averaged way more players over the years than other games
 
 the company names of the big companies are
 
