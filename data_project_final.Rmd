@@ -103,6 +103,8 @@ glimpse(games)
 games_tidy <- games %>% select(gamename,avg,month,year) %>% top_n(15,year) %>% arrange(desc(avg)) %>% filter(gamename %in% c("Counter-Strike: Global Offensive","Dota 2","PLAYERUNKNOWN'S BATTLEGROUNDS","Rust","Apex Legends","Grand Theft Auto V","Team Fortress 2","Cyberpunk 2077","Tom Clancy's Rainbow Six Siege","ARK: Survival Evolved"))
 
 
+games %>% filter(year == 2021) %>%  select(gamename,avg,month,year) %>% top_n(15,avg) %>% arrange(desc(avg)) %>% filter(gamename %in% c("Counter-Strike: Global Offensive","Dota 2","PLAYERUNKNOWN'S BATTLEGROUNDS","Rust","Apex Legends","Grand Theft Auto V","Team Fortress 2","Cyberpunk 2077","Tom Clancy's Rainbow Six Siege","ARK: Survival Evolved"))
+
 ```
 
 ## Plot the data! 
@@ -111,8 +113,29 @@ games_tidy <- games %>% select(gamename,avg,month,year) %>% top_n(15,year) %>% a
 ##avg means average people that still play that game
 games_tidy_plot <- ggplot(data = games_tidy) + 
   geom_point(aes(x = gamename,y = avg,color = gamename)) +  theme(axis.text.x = element_text(angle = 60, hjust = 1))
-
+games_tidy_plot
 ggsave("results.pdf",plot = games_tidy_plot)
+```
+from this plot i can see that counter strike is the top game being played
+
+i wonder how long has counter strike been the leading game for?
+
+```{r}
+
+csgo_data <- games %>% select(gamename,year,avg)
+
+ggplot(data =csgo_data,aes(year,avg)) + geom_line()
+
+```
+
+i want to compare counter strike from 2012 to 2021 to all games
+
+```{r}
+
+comp_df <- games %>% group_by(year) %>% filter(all(2012:2021))
+
+
+
 ```
 
 ## Get the stats 
