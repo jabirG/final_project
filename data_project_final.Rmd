@@ -47,7 +47,7 @@ You are not limited to these options for finding your data.
 <Write here what the goal of this analysis is. What question are we trying to answer?> 
 ## Set up 
 
-what gaming companies are runner ups to the big companies?
+what new gaming companies are competing against the big gaming companies?
 
 Load packages you will need for this analysis. 
 
@@ -112,19 +112,23 @@ games %>% filter(year == 2021) %>%  select(gamename,avg,month,year) %>% top_n(15
 ```{r}
 ##avg means average people that still play that game
 games_tidy_plot <- ggplot(data = games_tidy) + 
-  geom_point(aes(x = gamename,y = avg,color = gamename)) +  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+  geom_point(aes(x = gamename,y = avg,color = gamename)) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
 games_tidy_plot
-ggsave("results.pdf",plot = games_tidy_plot)
+ggsave("results.png",plot = games_tidy_plot)
 ```
 from this plot i can see that counter strike is the top game being played
 
-i wonder how long has counter strike been the leading game for?
+ how long has counter strike been the leading game for?
 
 ```{r}
 
-csgo_data <- games %>% select(gamename,year,avg)
+csgo_data <- games %>% 
+  select(gamename,year,avg)
 
-csgo_df <- csgo_data %>% group_by(year) %>% summarise(mean_pop = mean(avg))
+csgo_df <- csgo_data %>% 
+  group_by(year) %>% 
+  summarise(mean_pop = mean(avg))
 
 ggplot(data =csgo_data,aes(year,avg)) + geom_line()
 
@@ -134,14 +138,31 @@ i want to compare counter strike from 2012 to 2021 to all games
 
 ```{r}
 
-comp_df <- games %>% group_by(year) %>% filter(all(2012:2021)) %>% summarise(mean_pop = mean(avg))
+comp_df <- games %>% 
+  group_by(year) %>% 
+  filter(all(2012:2021)) %>% 
+  summarise(mean_pop = mean(avg))
 
 cscom_plot <- bind_rows(list(csgo = csgo_df,all_other_games = comp_df),.id = "game")
 
-ggplot(cscom_plot,aes(year,mean_pop,color = game)) + geom_point() + geom_smooth()
+csgo_plot <- ggplot(cscom_plot,aes(year,mean_pop,color = game)) + geom_point() + geom_smooth()
 
+ggsave("csgo_plot.png",plot = csgo_plot)
 ```
+this plot didn't really tell me the impact so
 
+
+now i want to compare csgo to games like grand theft auto and dota 2, which were very popular games over the years
+
+```{r}
+
+game_comparison <- games %>% 
+  filter(gamename %in% c("Counter-Strike: Global Offensive","Dota 2","Grand Theft Auto V")) %>% 
+  select(gamename,year,avg)
+
+games_plot <- ggplot(game_comparison,aes(year,avg,color = gamename)) + geom_smooth()
+ggsave("games_plot.png",plot = games_plot)
+```
 ## Get the stats 
 
 
@@ -178,6 +199,8 @@ Runner up companies
 - What did you find out in regards to your original question?
 
 that the big companies could own alot more than i thought,the runner ups have been making waves in the gaming community
+
+csgo has only been the leading game in players sense 2019
 
 - What exceptions or caveats do you have in regards to your analysis you did?
 
