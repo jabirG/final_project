@@ -1,0 +1,164 @@
+---
+title: "Refined_Version"
+author: "Jabir Ghaffar"
+date: "2024-09-12"
+output: html_document
+---
+
+
+# Final Datatrail Project
+
+### Your objectives!
+
+To complete this project, there are a few requirements you will need to fulfill. Remember that you are not on your own for this project! Data science is done best as a community, so please ask others (and instructors) questions when you get stuck!
+
+1. Clearly state the data science question and goal for the analysis you are embarking on.
+2. This project should be completely uploaded and up to date on GitHub.
+3. Follow good organization principles – you should at least have 2 folders: a `results` folder and a `data` folder.
+4. Make a resulting plot that you save to a file.
+5. Write up your final observations.
+6. Share your GitHub link for project review.
+
+## Data
+
+For this project, I chose gaming data from the TidyTuesday project.
+
+Source of data: [Games Dataset](https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-03-16/readme.md#gamescsv)
+
+The dataset contains player statistics for various games on Steam, including average players per game per month.
+
+## The goal of this analysis
+
+The goal of this analysis is to identify which gaming companies are runner-ups to the big companies dominating the gaming space. I also want to see how certain games (like Counter-Strike: Global Offensive) perform over time compared to other games.
+
+## Set up
+
+What gaming companies are runner-ups to the big companies?
+
+### Load packages
+
+```{r}
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(usethis)
+```
+
+### Set up directories
+
+```{r}
+if (!dir.exists("data")) {
+  dir.create("data")
+}
+if (!dir.exists("results")) {
+  dir.create("results")
+}
+```
+
+## Get the data
+
+```{r}
+games <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-16/games.csv')
+```
+
+### Explore the data
+
+```{r}
+glimpse(games)
+```
+
+## Data Cleaning
+
+```{r}
+games_tidy <- games %>%
+  filter(gamename %in% c("Counter-Strike: Global Offensive", "Dota 2", 
+                         "PLAYERUNKNOWN'S BATTLEGROUNDS", "Rust", "Apex Legends",
+                         "Grand Theft Auto V", "Team Fortress 2", "Cyberpunk 2077",
+                         "Tom Clancy's Rainbow Six Siege", "ARK: Survival Evolved")) %>%
+  filter(year == 2021) %>%
+  select(gamename, avg, month, year) %>%
+  slice_max(order_by = avg, n = 15) %>%
+  arrange(desc(avg))
+```
+
+## Plot the data!
+
+```{r}
+games_tidy_plot <- ggplot(data = games_tidy) + 
+  geom_point(aes(x = gamename, y = avg, color = gamename)) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+games_tidy_plot
+ggsave("results/results.pdf", plot = games_tidy_plot)
+```
+
+From this plot, I can see that Counter-Strike: Global Offensive is the top game being played in 2021.
+
+### Investigating Counter-Strike's popularity over time
+
+```{r}
+csgo_data <- games %>%
+  filter(gamename == "Counter-Strike: Global Offensive") %>%
+  filter(year >= 2012 & year <= 2021) %>%
+  group_by(year) %>%
+  summarise(mean_pop = mean(avg, na.rm = TRUE))
+
+ggplot(csgo_data, aes(x = year, y = mean_pop)) +
+  geom_line() +
+  labs(title = "Counter-Strike's Popularity (2012-2021)",
+       x = "Year", y = "Average Players")
+```
+
+### Comparing Counter-Strike to all other games (2012-2021)
+
+```{r}
+other_games_data <- games %>%
+  filter(gamename != "Counter-Strike: Global Offensive", year >= 2012, year <= 2021) %>%
+  group_by(year) %>%
+  summarise(mean_pop = mean(avg, na.rm = TRUE))
+
+comparison_plot <- bind_rows(list(CS_GO = csgo_data, All_Others = other_games_data), .id = "game") %>%
+  ggplot(aes(x = year, y = mean_pop, color = game)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Counter-Strike vs All Other Games (2012-2021)",
+       x = "Year", y = "Average Players")
+
+comparison_plot
+```
+
+## Get the stats
+
+```{r}
+summary(games_tidy)
+```
+
+## Conclusion
+
+From this analysis, I can conclude the following:
+
+- **Top games in 2021**: Counter-Strike: Global Offensive leads the charts, with games like Dota 2, Rust, and PLAYERUNKNOWN'S BATTLEGROUNDS following.
+- **Runner-up companies**: Apex Legends (Respawn Entertainment), ARK: Survival Evolved (Studio Wildcard), Cyberpunk 2077 (CD Projekt Red) are significant players in the gaming space.
+- **Long-term dominance**: Counter-Strike consistently outperforms other games, maintaining a significant player base from 2012 to 2021.
+  
+### Caveats:
+- This data represents only a portion of 2021 and is specific to the Steam platform.
+- It is unclear how representative this data is for other platforms and game markets.
+
+### Follow-up questions:
+- What games are peaking now in terms of player count?
+- Are any of these games still maintaining the same player base today?
+
+## Session Information
+
+```{r}
+sessionInfo()
+```
+
+---
+
+### **GitHub**
+
+You can find my other experiences on my GitHub here: [My Career](https://github.com/jabirG/My-Career).
