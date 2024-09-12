@@ -1,2 +1,2 @@
-# final_project
+# Video Game Dataset Project
 data analysis final project leanpub
